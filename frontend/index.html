@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Pet DevOps Project</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> Pet DevOps Project</h1>
+        <p>CI/CD Pipeline Demo</p>
+        <div id="status">Loading...</div>
+    </div>
+    <script>
+        fetch('/health')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('status').innerHTML = 
+                    `Status: ${data.status}<br>Service: ${data.service}`;
+            });
+    </script>
+</body>
+</html>

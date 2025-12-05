@@ -1,0 +1,19 @@
+﻿# Файлы IDE
+.vscode/
+.idea/
+
+# Node.js зависимости
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Окружение
+.env
+venv/
+
+# Системные файлы
+.DS_Store
+Thumbs.db
