@@ -50,10 +50,24 @@ pipeline {
         stage('Push to Nexus') {
             steps {
                 script {
+                    withCredentials([usernamePassword(
+                        credentialsId: DOCKER_CREDENTIALS_ID,
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASSWORD'
+                    )]) {
+                        sh '''
+                            echo "Logging into Nexus Docker Registry..."
+                            docker login ${NEXUS_REGISTRY} -u $DOCKER_USER -p $DOCKER_PASSWORD
+                            echo "Login successful!"
+                        '''
+                    }
+                    
                     docker.withRegistry("http://${NEXUS_REGISTRY}", DOCKER_CREDENTIALS_ID) {
                         docker.image("${NEXUS_REGISTRY}/pet-project/backend:${BUILD_ID}").push()
                         docker.image("${NEXUS_REGISTRY}/pet-project/frontend:${BUILD_ID}").push()
                     }
+                    
+                    echo "✅ Images pushed successfully to Nexus!"
                 }
             }
         }
