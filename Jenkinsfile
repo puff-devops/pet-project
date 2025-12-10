@@ -6,7 +6,6 @@ pipeline {
         DOCKER_CREDENTIALS_ID = 'nexus-docker-creds'
         GIT_CREDENTIALS_ID = 'github-creds'
         KUBE_CONFIG = credentials('kubeconfig')
-        DOCKER_BUILDKIT = '1'
     }
 
     options {
