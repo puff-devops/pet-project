@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         NEXUS_REGISTRY = '192.168.1.34:8083'
+        NEXUS_DOCKER_URL = 'http://192.168.1.34:8083'
         DOCKER_CREDENTIALS_ID = 'nexus-docker-creds'
         GIT_CREDENTIALS_ID = 'github-creds'
         KUBE_CONFIG = credentials('kubeconfig')
