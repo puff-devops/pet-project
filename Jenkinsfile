@@ -1,12 +1,14 @@
 pipeline {
     agent any
 
-    environment {
+        environment {
         NEXUS_REGISTRY = '192.168.1.34:8083'
         DOCKER_CREDENTIALS_ID = 'nexus-docker-creds'
         GIT_CREDENTIALS_ID = 'github-creds'
         KUBE_CONFIG = credentials('kubeconfig')
         DOCKER_BUILDKIT = '1'
+        DOCKER_USER = credentials('nexus-docker-creds').username
+        DOCKER_PASSWORD = credentials('nexus-docker-creds').password
     }
 
     options {
@@ -97,18 +99,14 @@ pipeline {
         stage('Push to Nexus') {
             steps {
                 script {
-                    sh "docker login ${NEXUS_REGISTRY} -u \${DOCKER_USER} -p \${DOCKER_PASSWORD}"
-                    
                     docker.withRegistry("http://${NEXUS_REGISTRY}", DOCKER_CREDENTIALS_ID) {
-                        sh '''
-                            docker push ${NEXUS_REGISTRY}/pet-project/backend:${BUILD_ID}
-                            docker push ${NEXUS_REGISTRY}/pet-project/frontend:${BUILD_ID}
-                            # Теги latest обычно не рекомендуется для production
-                            docker tag ${NEXUS_REGISTRY}/pet-project/backend:${BUILD_ID} ${NEXUS_REGISTRY}/pet-project/backend:latest
-                            docker tag ${NEXUS_REGISTRY}/pet-project/frontend:${BUILD_ID} ${NEXUS_REGISTRY}/pet-project/frontend:latest
-                            docker push ${NEXUS_REGISTRY}/pet-project/backend:latest
-                            docker push ${NEXUS_REGISTRY}/pet-project/frontend:latest
-                        '''
+                        // Используем методы Docker плагина вместо sh
+                        docker.image("${NEXUS_REGISTRY}/pet-project/backend:${BUILD_ID}").push()
+                        docker.image("${NEXUS_REGISTRY}/pet-project/frontend:${BUILD_ID}").push()
+                        
+                        // Если хотите latest теги
+                        docker.image("${NEXUS_REGISTRY}/pet-project/backend:${BUILD_ID}").push('latest')
+                        docker.image("${NEXUS_REGISTRY}/pet-project/frontend:${BUILD_ID}").push('latest')
                     }
                 }
             }
