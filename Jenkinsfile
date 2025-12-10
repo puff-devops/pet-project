@@ -7,8 +7,6 @@ pipeline {
         GIT_CREDENTIALS_ID = 'github-creds'
         KUBE_CONFIG = credentials('kubeconfig')
         DOCKER_BUILDKIT = '1'
-        DOCKER_USER = credentials('nexus-docker-creds').username
-        DOCKER_PASSWORD = credentials('nexus-docker-creds').password
     }
 
     options {
@@ -100,11 +98,9 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("http://${NEXUS_REGISTRY}", DOCKER_CREDENTIALS_ID) {
-                        // Используем методы Docker плагина вместо sh
                         docker.image("${NEXUS_REGISTRY}/pet-project/backend:${BUILD_ID}").push()
                         docker.image("${NEXUS_REGISTRY}/pet-project/frontend:${BUILD_ID}").push()
                         
-                        // Если хотите latest теги
                         docker.image("${NEXUS_REGISTRY}/pet-project/backend:${BUILD_ID}").push('latest')
                         docker.image("${NEXUS_REGISTRY}/pet-project/frontend:${BUILD_ID}").push('latest')
                     }
