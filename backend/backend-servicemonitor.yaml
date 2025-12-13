@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: backend-monitor
+  namespace: pet-project
+  labels:
+    release: prometheus  # Должно совпадать с селектором Prometheus
+spec:
+  selector:
+    matchLabels:
+      app: backend
+  namespaceSelector:
+    matchNames:
+      - pet-project
+  endpoints:
+  - port: http
+    interval: 15s
+    path: /metrics
+    scrapeTimeout: 10s
